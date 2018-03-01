@@ -1,4 +1,4 @@
-#include <unistd.h>
+ #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -16,17 +16,17 @@ int main()
 // struct to Hold Ip and port numbers
  
   listen_fd = socket(AF_INET, SOCK_STREAM, 0); 
-// Each server needs to â€œlistenâ€ for connections. The above function creates a socket with AF_INET ( IP Addressing ) and of type SOCK_STREAM. Data from all devices wishing to connect on this socket will be redirected to listen_fd.
+// Each server needs to œôòülistenœôòı for connections. The above function creates a socket with AF_INET ( IP Addressing ) and of type SOCK_STREAM. Data from all devices wishing to connect on this socket will be redirected to listen_fd.
  
   bzero( &servaddr, sizeof(servaddr));
 //Clear servaddr ( Mandatory ).
  
-  servaddr.sin_family = AF_INET;//Set Addressing scheme to â€“ AF_INET ( IP )
+  servaddr.sin_family = AF_INET;//Set Addressing scheme to œôòó AF_INET ( IP )
 
   servaddr.sin_addr.s_addr = htons(INADDR_ANY);
-//  Allow any IP to connect â€“ htons(INADDR_ANY)
+//  Allow any IP to connect œôòó htons(INADDR_ANY)
   servaddr.sin_port = htons(1024);
-//    Listen on port 22000 â€“ htons(22000)
+//    Listen on port 22000 œôòó htons(22000)
 
   bind(listen_fd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 //Prepare to listen for connections from address/port specified in sockaddr ( Any IP on port 22000 ).
