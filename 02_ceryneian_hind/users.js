@@ -1,128 +1,101 @@
-// get walking directions from central park to the empire state building
-var http = require('http');
-const request = require("request");
-// var request = require('request');
-
-// const url = "https://maps.googleapis.com/maps/api/geocode/json?address=Florence";
-var url = "http://api.intra.42.fr";
-request.get(url, (error, response, body) => {
-  let json = JSON.parse(body);
-  console.log(
-	  
-    //`City: ${json.results[0].formatted_address} -`,
-    // `Latitude: ${json.results[0].geometry.location.lat} -`,
-    // `Longitude: ${json.results[0].geometry.location.lng}`
-  );
-});
-
+var     http = require('http');
+var     fs = require('fs');
+var     prompt = require('prompt')
+const   chalk = require('chalk');
+const   request	= require('superagent');
+require('dotenv').config();
 
 var config = {
-	uid: 'b2e9c81e391c7285a5a54e07144eb25cb357d37db22faa9c37abe89a5ed136f0',
-	secret: '4674381edd5086bf512aa61c7733393d6b7fa4dd1b0904031f5a830dd366a845',
+	uid: process.env.UID,
+	secret: process.env.SECRET,
 	grant_type: 'client_credentials'
 }
 
-console.log(config.uid + '\n' + config.secret)
+function getFile(token) {
+    var arr = []
 
-// // get is a simple wrapper for request()
-// // which sets the http method to GET
-// var request = http.get(url, function (response) {
-//     // data is streamed in chunks from the server
-//     // so we have to handle the "data" event
-// var buffer = "",
-//     data,
-//     route;
-//
-// response.on("data", function (chunk) {
-//     buffer += chunk;
-// });
-//
-// response.on("end", function (err) {
-//     // finished transferring data
-//     // dump the raw data
-//     console.log(buffer);
-//     console.log("\n");
-//     data = JSON.parse(buffer);
-//     // route = data.routes[0];
-//
-//     // extract the distance and time
-//     // console.log("Walking Distance: " + route.legs[0].distance.text);
-//     // console.log("Time: " + route.legs[0].duration.text);
-//     });
-// });
+    console.log(chalk.magenta('Please provide a valid filename with users\n------------------------------------------\n'))
+    prompt.get('file', function(err, result) {
+        if (err) {
+            console.log(chalk.red('Invalid Prompt\n-----------------\n'))
+        }
+        else {
+            var file = result.file
+            if (file) {
+                fs.readFile(file, 'utf8', function(err, data) {
+                    if (err) {
+                        console.log(chalk.red('\nInvalid File: ' + file + '\n-------------------\n'))
+                        getFile(token)
+                    }
+                    else {
+                        var names = data.split('\n')
+                        for (i = 0; i < names.length; i++) {
+                            if (names[i])
+                                findUser(names[i], token)
+                            else
+                                continue
+                        }
+                    }
+                }
+            )}
+            else {
+                console.log(chalk.red('Invalid File: ' + file + '\n----------------\n'))
+                getFile(token)
+            }
+        }
+    })
+}
 
+function oauth2() {
+    console.log(chalk.yellow('Authenticating Token...\n-----------------------\n'))
+    return new Promise ((resolve, reject) => {
+        request
+            .post('https://api.intra.42.fr/oauth/token')
+            .send(
+                {
+                    grant_type: config.grant_type,
+                    client_id: config.uid,
+                    client_secret: config.secret
+                }
+            )
+            .then((res) => {
+                    console.log(chalk.green('Successfully Authenticated\n--------------------------\n'))
+                    resolve(res.body);
+                }
+            )
+            .catch((err) => {
+                console.log(chalk.red('Rejected Token\n--------------\n'))
+                reject(err)
+            })
+    });
+}
 
-// // get walking directions from central park to the empire state building
-// var http = require("http");
-//     url = "http://maps.googleapis.com/maps/api/directions/json?origin=Central Park&destination=Empire State Building&sensor=false&mode=walking";
-//
-// // get is a simple wrapper for request()
-// // which sets the http method to GET
-// var request = http.get(url, function (response) {
-//     // data is streamed in chunks from the server
-//     // so we have to handle the "data" event
-//     var buffer = "",
-//         data,
-//         route;
-//
-//     response.on("data", function (chunk) {
-//         buffer += chunk;
-//     });
-//
-//     response.on("end", function (err) {
-//         // finished transferring data
-//         // dump the raw data
-//         console.log(buffer);
-//         console.log("\n");
-//         data = JSON.parse(buffer);
-//         route = data.routes[0];
-//
-//         // extract the distance and time
-//         console.log("Walking Distance: " + route.legs[0].distance.text);
-//         console.log("Time: " + route.legs[0].duration.text);
-//     });
-// });
+function findUser(elem, token) {
+    return (
+    request
+        .get('https://api.intra.42.fr/v2/users/' + elem)
+        .send({ access_token: token.access_token })
+        .then((res) => {
+            if (!elem)
+                console.log(chalk.red('\nUser not Found') + ' ' + chalk.cyan(elem) + '\n------------------\n')
+            else
+                console.log('\n' + chalk.cyan(elem) + ': ' + chalk.green(res.body.location ? res.body.location : "Not Available") + chalk.green('\n-------------------\n'));
+        })
+        .catch((err) => {
+            console.log(chalk.red('\nFailed to find user: ') + chalk.cyan(elem) + chalk.red('\n------------------------------\n'))
+        })
+    );
+}
 
+function main() {
+    oauth2()
+    .then((token) => {
+        names = getFile(token)
+    })
+    .catch((err) => {
+        console.log(err)
+        console.log(chalk.red('Error\n-----\n'))
+    })
+}
 
-
-// require('dotenv').config();
-// const jQuery = require('jquery')
-// const ajax = require('ajax')
-//
-// jQuery.ajax({
-// 	url: "/rest/abc",
-//     type: "GET",
-//
-//     contentType: 'application/json; charset=utf-8',
-//     success: function(resultData) {
-// 			console.log("here")
-// 			//here is your json.
-// 			// process it
-// 	},
-//     error : function(jqXHR, textStatus, errorThrown) {
-// 	},
-// 	timeout: 120000,
-// });
-//
-//
-
-
-
-
-/*const fetch = require("http")
-
-fetch("https://api.intra.42.fr")
-
-.then(function() {
-		console.log(users.location);
-	})
-.catch(function() {
-		console.log("error");
-})
-
-var xhr = new XMLHttpRequest();
-xhr.open("GET", "api.intra.42.fr", false);
-xhr.send();
-
-console.log(xhr.status);
-console.log(xhr.statusText);*/
+main()
