@@ -94,7 +94,7 @@ function main() {
     })
     .catch((err) => {
         console.log(err)
-        console.log(chalk.red('Error\n-----\n'))
+        console.log(chalk.red('Error in authentication\n-----------------------\n'))
     })
 }
 
