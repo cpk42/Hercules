@@ -1,0 +1,32 @@
+Arguments: 
+  /nfs/2017/c/ckrommen/.brew/Cellar/node/9.7.1_1/bin/node /nfs/2017/c/ckrommen/.brew/Cellar/yarn/1.5.1_1/libexec/bin/yarn.js install jquery
+
+PATH: 
+  /nfs/2017/c/ckrommen/.gem/ruby/2.4.0/bin:/nfs/2017/c/ckrommen/.brew/bin:/nfs/2017/c/ckrommen/.gem/ruby/2.0.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/nfs/2017/c/ckrommen/.gem/ruby/2.0.0/bin:/nfs/2017/c/ckrommen/.gem/ruby/2.0.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  9.7.1
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: `install` has been replaced with `add` to add new dependencies. Run "yarn add jquery" instead.
+      at new MessageError (/nfs/2017/c/ckrommen/.brew/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:186:110)
+      at Object.<anonymous> (/nfs/2017/c/ckrommen/.brew/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:21987:13)
+      at Generator.next (<anonymous>)
+      at step (/nfs/2017/c/ckrommen/.brew/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:98:30)
+      at /nfs/2017/c/ckrommen/.brew/Cellar/yarn/1.5.1_1/libexec/lib/cli.js:109:13
+      at <anonymous>
