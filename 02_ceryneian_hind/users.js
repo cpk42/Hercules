@@ -1,6 +1,7 @@
-var     http = require('http');
-var     fs = require('fs');
-var     prompt = require('prompt')
+const   http = require('http');
+const   fs = require('fs');
+const   prompt = require('prompt')
+const   clear = require('clear');
 const   chalk = require('chalk');
 const   request	= require('superagent');
 require('dotenv').config();
@@ -11,24 +12,45 @@ var config = {
 	grant_type: 'client_credentials'
 }
 
+function printTitle() {
+  console.log(
+      chalk.white('------------------------------------------\n') +
+      chalk.red('                :::      ::::::::             \n') +
+      chalk.red('              :+:      :+:    :+:             \n') +
+      chalk.yellow('            +:+ +:+         +:+               \n') +
+      chalk.yellow('          +#+  +:+       +#+                  \n') +
+      chalk.yellow('        +#+#+#+#+#+   +#+                     \n') +
+      chalk.green('             #+#    #+#                       \n') +
+      chalk.green('            ###   ########.fr                 \n') +
+      '\n' +
+      chalk.white('          Created by: ckrommen               \n') +
+      chalk.white('------------------------------------------\n')
+  )
+}
+
 function getFile(token) {
     var arr = []
 
     console.log(chalk.magenta('Please provide a valid filename with users\n------------------------------------------\n'))
     prompt.get('file', function(err, result) {
         if (err) {
-            console.log(chalk.red('Invalid Prompt\n-----------------\n'))
+            console.log(chalk.red('          Invalid Prompt\n------------------------------------------\n'))
         }
         else {
             var file = result.file
             if (file) {
                 fs.readFile(file, 'utf8', function(err, data) {
                     if (err) {
-                        console.log(chalk.red('\nInvalid File: ' + file + '\n-------------------\n'))
+                        console.log(chalk.red('\n            Invalid File: ' + file + '\n------------------------------------------\n'))
+                        clear()
+                        printTitle()
                         getFile(token)
                     }
                     else {
                         var names = data.split('\n')
+                        clear()
+                        printTitle()
+                        console.log(chalk.yellow('Searching through ' + chalk.magenta(file)) + '\n')
                         for (i = 0; i < names.length; i++) {
                             if (names[i])
                                 findUser(names[i], token)
@@ -39,7 +61,9 @@ function getFile(token) {
                 }
             )}
             else {
-                console.log(chalk.red('Invalid File: ' + file + '\n----------------\n'))
+                console.log(chalk.red('            Invalid File: ' + file + '\n------------------------------------------\n'))
+                clear()
+                printTitle()
                 getFile(token)
             }
         }
@@ -47,7 +71,7 @@ function getFile(token) {
 }
 
 function oauth2() {
-    console.log(chalk.yellow('Authenticating Token...\n-----------------------\n'))
+    console.log(chalk.yellow('         Authenticating Token...\n------------------------------------------\n'))
     return new Promise ((resolve, reject) => {
         request
             .post('https://api.intra.42.fr/oauth/token')
@@ -59,12 +83,12 @@ function oauth2() {
                 }
             )
             .then((res) => {
-                    console.log(chalk.green('Successfully Authenticated\n--------------------------\n'))
+                    console.log(chalk.green('       Successfully Authenticated\n------------------------------------------\n'))
                     resolve(res.body);
                 }
             )
             .catch((err) => {
-                console.log(chalk.red('Rejected Token\n--------------\n'))
+                console.log(chalk.red('             Rejected Token\n------------------------------------------\n'))
                 reject(err)
             })
     });
@@ -77,24 +101,25 @@ function findUser(elem, token) {
         .send({ access_token: token.access_token })
         .then((res) => {
             if (!elem)
-                console.log(chalk.red('\nUser not Found') + ' ' + chalk.cyan(elem) + '\n------------------\n')
+                console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))// + '\n------------------\n'
             else
-                console.log('\n' + chalk.cyan(elem) + ': ' + chalk.green(res.body.location ? res.body.location : "Not Available") + chalk.green('\n-------------------\n'));
+                console.log(chalk.cyan.underline.bold(elem) + ': ' + chalk.green(res.body.location ? res.body.location : "Not Available"));// + chalk.green('\n-------------------\n')
         })
         .catch((err) => {
-            console.log(chalk.red('\nFailed to find user: ') + chalk.cyan(elem) + chalk.red('\n------------------------------\n'))
+            console.log(chalk.red('Failed to find user: ') + chalk.cyan.underline.bold(elem))// + chalk.red('\n------------------------------\n')
         })
     );
 }
 
 function main() {
+    clear()
+    printTitle()
     oauth2()
     .then((token) => {
         names = getFile(token)
     })
     .catch((err) => {
-        console.log(err)
-        console.log(chalk.red('Error in authentication\n-----------------------\n'))
+        console.log(chalk.red('         Error in authentication\n------------------------------------------\n'))
     })
 }
 
