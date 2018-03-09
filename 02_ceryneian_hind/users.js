@@ -29,8 +29,6 @@ function printTitle() {
 }
 
 function getFile(token) {
-    var arr = []
-
     console.log(chalk.magenta('Please provide a valid filename with users\n------------------------------------------\n'))
     prompt.get('file', function(err, result) {
         if (err) {
@@ -41,15 +39,14 @@ function getFile(token) {
             if (file) {
                 fs.readFile(file, 'utf8', function(err, data) {
                     if (err) {
-                        console.log(chalk.red('\n            Invalid File: ' + file + '\n------------------------------------------\n'))
                         clear()
                         printTitle()
                         getFile(token)
                     }
                     else {
-                        var names = data.split('\n')
                         clear()
                         printTitle()
+                        var names = data.split('\n')
                         console.log(chalk.yellow('Searching through ' + chalk.magenta(file)) + '\n')
                         for (i = 0; i < names.length; i++) {
                             if (names[i])
@@ -100,18 +97,19 @@ function findUser(elem, token) {
         .get('https://api.intra.42.fr/v2/users/' + elem)
         .send({ access_token: token.access_token })
         .then((res) => {
-			var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
-			var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
-            if (!elem)
-                console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))// + '\n------------------\n'
-            else{
-				console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(res.body.location ? res.body.location : "Not Available"));// + chalk.green('\n-------------------\n')
-				console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
-				console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
-			}
-	    })
+			       var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
+			       var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
+             var location = (res.body.location ? res.body.location : "Not Available")
+             if (!elem) {
+               console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))
+             }
+             else {
+               console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(location))
+               console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
+               console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
+			       }})
         .catch((err) => {
-            console.log(chalk.red('Failed to find user: ') + chalk.cyan.underline.bold(elem))// + chalk.red('\n------------------------------\n')
+            console.log(chalk.red('Failed to find user: ') + chalk.cyan.underline.bold(elem))
         })
     );
 }
