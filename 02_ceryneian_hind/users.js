@@ -4,6 +4,7 @@ const   prompt = require('prompt')
 const   clear = require('clear');
 const   chalk = require('chalk');
 const   request	= require('superagent');
+const   anim = require('./animation')
 require('dotenv').config();
 
 var config = {
@@ -14,17 +15,17 @@ var config = {
 
 function printTitle() {
   console.log(
-      chalk.white('------------------------------------------\n') +
-      chalk.red('                :::      ::::::::             \n') +
-      chalk.red('              :+:      :+:    :+:             \n') +
-      chalk.yellow('            +:+ +:+         +:+               \n') +
-      chalk.yellow('          +#+  +:+       +#+                  \n') +
-      chalk.yellow('        +#+#+#+#+#+   +#+                     \n') +
-      chalk.green('             #+#    #+#                       \n') +
-      chalk.green('            ###   ########.fr                 \n') +
-      '\n' +
-      chalk.white('          Created by: ckrommen               \n') +
-      chalk.white('------------------------------------------\n')
+    chalk.white('------------------------------------------\n') +
+    chalk.red('                :::      ::::::::             \n') +
+    chalk.red('              :+:      :+:    :+:             \n') +
+    chalk.yellow('            +:+ +:+         +:+               \n') +
+    chalk.yellow('          +#+  +:+       +#+                  \n') +
+    chalk.yellow('        +#+#+#+#+#+   +#+                     \n') +
+    chalk.green('             #+#    #+#                       \n') +
+    chalk.green('            ###   ########.fr                 \n') +
+    '\n' +
+    chalk.white('          Created by: ckrommen               \n') +
+    chalk.white('------------------------------------------\n')
   )
 }
 
@@ -32,11 +33,11 @@ function getFile(token) {
     console.log(chalk.magenta('Please provide a valid filename with users\n------------------------------------------\n'))
     prompt.get('file', function(err, result) {
         if (err) {
-            console.log(chalk.red('          Invalid Prompt\n------------------------------------------\n'))
+            console.log(chalk.red('\n\n--------------Program Exited--------------\n------------------------------------------\n'))
         }
         else {
             var file = result.file
-            if (file) {
+            if (file && file.endsWith('.txt')) {
                 fs.readFile(file, 'utf8', function(err, data) {
                     if (err) {
                         clear()
@@ -54,17 +55,15 @@ function getFile(token) {
                             else
                                 continue
                         }
-                    }
-                }
-            )}
+                      }
+                    })}
             else {
                 console.log(chalk.red('            Invalid File: ' + file + '\n------------------------------------------\n'))
                 clear()
                 printTitle()
                 getFile(token)
             }
-        }
-    })
+        }})
 }
 
 function oauth2() {
@@ -77,13 +76,11 @@ function oauth2() {
                     grant_type: config.grant_type,
                     client_id: config.uid,
                     client_secret: config.secret
-                }
-            )
+                })
             .then((res) => {
                     console.log(chalk.green('       Successfully Authenticated\n------------------------------------------\n'))
                     resolve(res.body);
-                }
-            )
+                })
             .catch((err) => {
                 console.log(chalk.red('             Rejected Token\n------------------------------------------\n'))
                 reject(err)
@@ -97,26 +94,28 @@ function findUser(elem, token) {
         .get('https://api.intra.42.fr/v2/users/' + elem)
         .send({ access_token: token.access_token })
         .then((res) => {
-			       var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
-			       var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
-             var location = (res.body.location ? res.body.location : "Not Available")
-             if (!elem) {
-               console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))
-             }
-             else {
-               console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(location))
-               console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
-               console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
-			       }})
-        .catch((err) => {
-            console.log(chalk.red('Failed to find user: ') + chalk.cyan.underline.bold(elem))
+			      var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
+			      var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
+            var location = (res.body.location ? res.body.location : "Not Available")
+            if (!elem) {
+              console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))
+            }
+            else {
+              console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(location))
+              console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
+              console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
+          }
         })
-    );
-}
+        .catch((err) => {
+            console.log(chalk.red('Cannot connect to 42 API...'))
+            console.log(chalk.red('\n\n--------------Program Exited--------------\n------------------------------------------\n'))
+		}
+  ))
+};
 
 function main() {
     clear()
-    printTitle()
+    anim.printAnim()
     oauth2()
     .then((token) => {
         names = getFile(token)
