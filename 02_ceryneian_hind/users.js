@@ -36,7 +36,7 @@ function getFile(token) {
         }
         else {
             var file = result.file
-            if (file) {
+            if (file && file.endsWith('.txt')) {
                 fs.readFile(file, 'utf8', function(err, data) {
                     if (err) {
                         clear()
@@ -97,22 +97,20 @@ function findUser(elem, token) {
         .get('https://api.intra.42.fr/v2/users/' + elem)
         .send({ access_token: token.access_token })
         .then((res) => {
-			       var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
-			       var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
-             var location = (res.body.location ? res.body.location : "Not Available")
-             if (!elem) {
-               console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))
-             }
-             else {
-               console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(location))
-               console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
-               console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
-			       }})
+			var level = (res.body.cursus_users[0].level != null) ? res.body.cursus_users[0].level : "No Level"
+			var grade = (res.body.cursus_users[0].grade != null) ? res.body.cursus_users[0].grade : "No Grade"
+            var location = (res.body.location ? res.body.location : "Not Available")
+            if (!elem) {
+              console.log(chalk.red('User not Found') + ' ' + chalk.cyan(elem))
+            }
+            else {
+              console.log('|--- ' + chalk.cyan.bold(elem) + ': ' + chalk.green(location))
+              console.log('|------  ' + chalk.yellow('Level ') + chalk.magenta(level))
+              console.log('|------  ' + chalk.yellow('Grade ') + chalk.magenta(grade))
+			      }})
         .catch((err) => {
             console.log(chalk.red('Failed to find user: ') + chalk.cyan.underline.bold(elem))
-        })
-    );
-}
+}))};
 
 function main() {
     clear()
