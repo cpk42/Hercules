@@ -107,8 +107,8 @@ function findUser(elem, token) {
           }
         })
         .catch((err) => {
-            console.log(chalk.red('Cannot connect to 42 API...'))
-            console.log(chalk.red('\n\n--------------Program Exited--------------\n------------------------------------------\n'))
+            console.log('|--- ' + chalk.red('User not found ') + chalk.bold.cyan(elem))
+            console.log('|---------------------------  ')
 		}
   ))
 };
