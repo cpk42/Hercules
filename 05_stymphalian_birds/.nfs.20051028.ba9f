@@ -26,20 +26,7 @@ else
 			mkdir src include
 			printf "Creating .gitignore\n\n"
 			touch .gitignore
-			read -n1 -p "Would you like to clone your libft? [y/n] " ret
-			echo ""
-			if 	[ "$ret" = "y" ] || [ "$ret" = "Y" ]; then
-				tog=1
-				while [ $tog = 1 ]
-				do
-					read -p "Please provide a valid git repository for libft: " lib
-					echo ""
-					git clone $lib libft
-					if [ -d "libft" ]; then
-						tog=0
-					fi
-				done
-			fi
+			read -n1 -r "Would you like to include " 
 		else
 			printf "The language you provided is %s!\n" "$1"
 		cd $dir
